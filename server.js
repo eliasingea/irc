@@ -56,6 +56,8 @@ io.on('connection', function (socket) {
     socket.on('identify', function (name) {
       socket.set('name', String(name || 'Anonymous'), function (err) {
         updateRoster();
+        //here do we need to match it do the db?
+        
       });
     });
   });

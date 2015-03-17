@@ -27,3 +27,6 @@ CREATE TABLE IF NOT EXISTS messages (
   message varchar(150) NOT NULL, 
   PRIMARY KEY (id)
 ) ;
+
+INSERT INTO messages (username, message) VALUES 
+('raz', 'good luck favorite students, I am the best Prof!'); 
