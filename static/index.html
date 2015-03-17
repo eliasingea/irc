@@ -35,6 +35,14 @@ if(showhide == "show"){
 }
 }
 
+function background(showhide){
+if(showhide == "show"){
+    document.getElementById('background').style.visibility="visible";
+}else if(showhide == "hide"){
+    document.getElementById('background').style.visibility="hidden"; 
+}
+}
+
 
       function ChatController($scope) {
         var socket = io.connect('https://' + document.domain + ':' + location.port + '/chat');
@@ -122,6 +130,7 @@ if(showhide == "show"){
           {
            console.log('hello there')
            login('hide') 
+           background('show')
           });// kmh added this semi
         }         // kmh took this semi out
 
@@ -131,7 +140,7 @@ if(showhide == "show"){
     </script>
   </head>
   {{log}}  <!-- Did we decide this was actually performing something? -->
-  <body onload="javascript:login('show')">
+  <body onload="javascript:login('show'); javascript:background('hide')">
     
 
     
@@ -174,6 +183,7 @@ if(showhide == "show"){
           </ul>
           
         </div>
+       <div id='background'>
        <div class="span9">
           <div class="row controls">
             <form ng-submit="send()">
@@ -245,6 +255,7 @@ if(showhide == "show"){
                   <!--</tr>-->
                 </tbody>
               </table>
+            </div>
             </div>
             <!-- this is where Kris stopped adding stuff -->
               
