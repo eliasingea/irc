@@ -29,4 +29,4 @@ CREATE TABLE IF NOT EXISTS messages (
 ) ;
 
 INSERT INTO messages (username, message) VALUES 
-('raz', 'good luck favorite students, I am the best Prof!'); 
+('raz', 'I love computer science');   

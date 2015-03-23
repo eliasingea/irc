@@ -12,13 +12,13 @@
 
 #popupbox{
 margin: 0; 
-margin-left: 10%; 
+margin-left: 15%; 
 margin-right: 70%;
 margin-top: 70px; 
 padding-top: 10px; 
 width: 20%; 
-height: 170px; 
-position: absolute; 
+height: 270px; 
+position: absolute;
 background: #FFFFFF; 
 border: solid #909090 2px; 
 z-index: 9; 
@@ -59,6 +59,7 @@ if(showhide == "show"){
         socket.on('connect', function () {
           console.log('connected');
           $scope.setName();
+         // socket.emit('connect', $scope.room); 
         });
 
         socket.on('message', function (msg) {
@@ -86,10 +87,16 @@ if(showhide == "show"){
           $scope.roster = names;
           $scope.$apply();
         });
+        
+        socket.on('roomUpdate', function (room) {
+          console.log("Rooms are set up", room); 
+          $scope.name = $scope.name2 + " : " + $scope.room; 
+      });
 
         $scope.send = function send() {
-          console.log('Sending message:', $scope.text);
-          socket.emit('message', $scope.text);
+          console.log('Sending message:', $scope.text, $scope.room);
+          var tmp = {'username': $scope.name2,'text': $scope.text, 'room': $scope.room};
+          socket.emit('message', tmp);
           $scope.text = '';
           //$scope.$apply(); 
          
@@ -104,19 +111,77 @@ if(showhide == "show"){
           $scope.name = $scope.name2;
           $scope.$apply();
         };
+        
+        // do we need the following stuff to change rooms once we're logged in? - kmh
+        
+        // $scope.changeRoom = function(new_room)
+        // {
+        //   $scope.current_room=new_room; 
+          
+        // }
+        // $scope.createRoom = function()
+        // {
+        //   if($scope.new_room.length>0)
+        //   {
+        //     superagent.post('/new_room').send({name:$scope.new_room_name}).end(function(err, result) {
+              
+        //     }); 
+        //   }
+          
+        // }; 
+        // $scope.new_room_name = '';
+        // console.log("Creating room: " + $scope.new_room_name); 
+
+    $scope.disconnect = function disconnect() {
+      console.log('disconnect:');
+      console.log(document.getElementById('popupbox').style.visibility);
+      console.log(document.getElementById('logout').style.visibility);
+      if (document.getElementById('popupbox').style.visibility=="hidden") {
+        console.log('disconnect: popup hidden');
+        console.log('disconnect: ', $scope.name2, $scope.password);
+        $scope.name2 = '';
+        $scope.password = '';
+        $scope.messages = [];
+        $scope.room = ''; 
+        $scope.searchResults = [];
+        socket.emit('disconnect');
+        login('show'); 
+        background('hide'); 
+      
+      } else {
+        console.log('disconnect: popup visible');
+         
+      }
+     socket.emit('disconnect');
+    };
+
+
+
+
+
+
+
+
+
+
+
+
+        
 
          $scope.processLogin = function processLogin() {
           console.log("Trying to log in");
           
-          var dict = {'username': $scope.name2, 'password': $scope.password}; 
+          var dict = {'username': $scope.name2, 'password': $scope.password, 'room': $scope.room};
+          
           socket.emit('login', dict);
           //socket.emit('login', $scope.password);  // this is how Gusty did it, we should try 
           console.log("log is ");
          }; 
          
          $scope.search = function search(){
-           console.log('search string: ', $scope.messageSearch); 
-           socket.emit('search', $scope.messageSearch);
+           console.log('search string: ', $scope.messageSearch);
+           var dict = {'search': $scope.messageSearch, 'room': $scope.room}; 
+           socket.emit('search', dict);
            
            $scope.messageSearch = ''; 
            
@@ -151,12 +216,15 @@ if(showhide == "show"){
     <div class="container" ng-controller="ChatController">
       
       
-          <div id="popupbox"> 
+         
+<div id="popupbox" class="pull-right" height=400 width=100> 
 <form ng-submit="processLogin()">
 <center>Username:</center>
 <center><input type="text"  ng-model="name2" ng-change="setName2()" placeholder="Username" size="14" /></center>
 <center>Password:</center>
-<center><input  ng-model="password" type="password" size="14" /></center>
+<center><input  ng-model="password" type="password" placeholder="Password" size="14" /></center>
+<center>Room:</center>
+<center><input ng-model="room" type="room" placeholder="Room" size="24" /></center>
 <center><input type="submit" class="span1 btn btn-primary" value="Send" ng-disabled="!password"></center>
 
 </form>
@@ -166,13 +234,21 @@ if(showhide == "show"){
 
       <div class="navbar navbar-fixed-top navbar-inverse">
         <div class="navbar-inner">
+          <!--  kmh will try to insert a logout button here -->
+          	<div id="logout" class="pull-left" visibility:"visible">
+<form ng-submit="disconnect()">
+<input type="submit" value="Logout">
+
+</form>
+</div>
           <div class="pull-right">
             <a href="https://c9.io" class="brand">Cloud9 IDE</a>
           </div>
         </div>
       </div>
       <div class="page-header">
-        <h1>KAE's Chat! :)</h1>
+        <!--  kmh will try to insert a little logo here   -->
+        </p><img height=50 width=50 src="img/bolt_logo.jpg" alt="Flashy!" ><h1>KAE's Chat! </h1>
       </div>
       <div class="row">
         <div class="span3">
