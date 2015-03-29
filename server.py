@@ -3,7 +3,7 @@ import uuid
 import psycopg2
 import psycopg2.extras
 from flask import Flask, session, render_template, request, redirect, url_for
-from flask.ext.socketio import SocketIO, emit
+from flask.ext.socketio import SocketIO, emit, join_room, leave_room 
 
 app = Flask(__name__, static_url_path='')
 app.config['SECRET_KEY'] = 'secret!'
@@ -73,7 +73,7 @@ def new_message(myTemp):
     tmp = {'name':users[session['uuid']]['username'], 'text': myTemp['text']}
     #tmp = [myTemp['username'], myTemp['text'], myTemp['room']]; 
     messages.append(tmp)
-    emit('message', tmp, broadcast=True)
+    emit('message', tmp, join_room(myTemp['room']))
 
     query = "INSERT INTO messages (username, message, room) VALUES (%s, %s, %s);" 
     print cur.mogrify(query, (myTemp['username'], myTemp['text'], myTemp['room']));
